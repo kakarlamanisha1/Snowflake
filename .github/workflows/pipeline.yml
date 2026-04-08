@@ -20,7 +20,10 @@ jobs:
       - name: Install Snowflake Connector
         run: pip install snowflake-connector-python
 
-      - name: Run SQL Scripts
+      - name: Debug Files
+        run: ls -R
+
+      - name: Run Pipeline
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USERNAME }}
