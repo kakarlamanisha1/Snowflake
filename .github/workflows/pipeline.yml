@@ -13,10 +13,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Install SnowSQL
-       run:  curl https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.28-linux_x86_64.bash -o snowsql.sh bash snowsql.sh -y echo "$HOME/bin" >> $GITHUB_PATH
+        run: |
+          curl https://sfc-repo.snowflakecomputing.com/snowsql/bootstrap/1.2/linux_x86_64/snowsql-1.2.28-linux_x86_64.bash -o snowsql.sh
+          bash snowsql.sh -y
+          echo "$HOME/bin" >> $GITHUB_PATH
 
       - name: Verify SnowSQL
         run: snowsql -v
+
       - name: Run Setup
         run: snowsql -f sql/01_setup.sql
         env:
