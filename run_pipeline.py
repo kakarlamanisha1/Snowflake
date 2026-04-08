@@ -1,6 +1,7 @@
 import snowflake.connector
 import os
 
+# Create connection
 conn = snowflake.connector.connect(
     user=os.environ['SNOWFLAKE_USER'],
     password=os.environ['SNOWFLAKE_PASSWORD'],
@@ -13,13 +14,38 @@ conn = snowflake.connector.connect(
 cursor = conn.cursor()
 
 def run_sql_file(file_path):
-    with open(file_path, 'r') as f:
-        sql_commands = f.read().split(';')
-        for command in sql_commands:
-            if command.strip():
-                cursor.execute(command)
+    print(f"\n📂 Running file: {file_path}")
 
-# Run all scripts
+    with open(file_path, 'r') as f:
+        sql_script = f.read()
+
+    try:
+        # 🔥 If stored procedure exists → run whole script
+        if "$$" in sql_script:
+            print("⚙️ Detected stored procedure. Executing full script...")
+            cursor.execute(sql_script)
+        else:
+            # ✅ Split and execute safely
+            statements = sql_script.split(';')
+
+            for stmt in statements:
+                stmt = stmt.strip()
+                if stmt:
+                    try:
+                        print(f"➡️ Executing: {stmt[:50]}...")
+                        cursor.execute(stmt)
+                    except Exception as e:
+                        print(f"❌ Error in statement:\n{stmt}")
+                        print(f"Error: {e}")
+                        raise e
+
+    except Exception as e:
+        print(f"🔥 Failed executing file: {file_path}")
+        print(e)
+        raise e
+
+
+# 🔁 Run all SQL files in order
 files = [
     "01_setup.sql",
     "02_load_data.sql",
@@ -29,10 +55,10 @@ files = [
 ]
 
 for file in files:
-    print(f"Running {file}")
     run_sql_file(file)
 
+# Close connection
 cursor.close()
 conn.close()
 
-print("Pipeline executed successfully 🚀")
+print("\n✅ Pipeline executed successfully 🚀")
