@@ -19,5 +19,4 @@ BEGIN
 END;
 $$;
 
--- Call Procedure
 CALL refresh_summary();
