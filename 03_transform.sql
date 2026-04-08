@@ -1,4 +1,3 @@
--- Create transformed table
 CREATE OR REPLACE TABLE customer_summary AS
 SELECT 
     c.customer_id,
