@@ -1,8 +1,6 @@
--- Create Stream
 CREATE OR REPLACE STREAM orders_stream
 ON TABLE orders;
 
--- Target Table
 CREATE OR REPLACE TABLE order_updates (
     order_id INT,
     customer_id INT,
@@ -10,7 +8,6 @@ CREATE OR REPLACE TABLE order_updates (
     action STRING
 );
 
--- Task
 CREATE OR REPLACE TASK process_orders_task
 WAREHOUSE = demo_wh
 SCHEDULE = '1 MINUTE'
@@ -24,5 +21,4 @@ SELECT
     METADATA$ACTION
 FROM orders_stream;
 
--- Start Task
 ALTER TASK process_orders_task RESUME;
