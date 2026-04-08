@@ -1,17 +1,14 @@
--- Create DB & Schema
 CREATE OR REPLACE DATABASE demo_db;
 CREATE OR REPLACE SCHEMA demo_db.demo_schema;
 
 USE DATABASE demo_db;
 USE SCHEMA demo_schema;
 
--- Create Warehouse
 CREATE OR REPLACE WAREHOUSE demo_wh
 WITH WAREHOUSE_SIZE = 'XSMALL'
 AUTO_SUSPEND = 60
 AUTO_RESUME = TRUE;
 
--- Create Tables
 CREATE OR REPLACE TABLE customers (
     customer_id INT,
     name STRING,
