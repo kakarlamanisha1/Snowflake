@@ -21,11 +21,11 @@ def run_sql_file(file_path):
 
 # Run all scripts
 files = [
-    "sql/01_setup.sql",
-    "sql/02_load_data.sql",
-    "sql/03_transform.sql",
-    "sql/04_streams_tasks.sql",
-    "sql/05_procedure.sql"
+    "01_setup.sql",
+    "02_load_data.sql",
+    "03_transform.sql",
+    "04_streams_tasks.sql",
+    "05_procedure.sql"
 ]
 
 for file in files:
