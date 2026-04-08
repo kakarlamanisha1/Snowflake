@@ -11,7 +11,31 @@ conn = snowflake.connector.connect(
     schema=os.environ['SNOWFLAKE_SCHEMA']
 )
 
+conn.autocommit = True
 cursor = conn.cursor()
+
+
+# ✅ Smart SQL splitter (handles $$ blocks)
+def split_sql_statements(sql_script):
+    statements = []
+    current = ""
+    in_dollar_block = False
+
+    for line in sql_script.splitlines():
+        if "$$" in line:
+            in_dollar_block = not in_dollar_block
+
+        current += line + "\n"
+
+        if not in_dollar_block and ";" in line:
+            statements.append(current.strip())
+            current = ""
+
+    if current.strip():
+        statements.append(current.strip())
+
+    return statements
+
 
 def run_sql_file(file_path):
     print(f"\n📂 Running file: {file_path}")
@@ -19,33 +43,21 @@ def run_sql_file(file_path):
     with open(file_path, 'r') as f:
         sql_script = f.read()
 
-    try:
-        # 🔥 If stored procedure exists → run whole script
-        if "$$" in sql_script:
-            print("⚙️ Detected stored procedure. Executing full script...")
-            cursor.execute(sql_script)
-        else:
-            # ✅ Split and execute safely
-            statements = sql_script.split(';')
+    statements = split_sql_statements(sql_script)
 
-            for stmt in statements:
-                stmt = stmt.strip()
-                if stmt:
-                    try:
-                        print(f"➡️ Executing: {stmt[:50]}...")
-                        cursor.execute(stmt)
-                    except Exception as e:
-                        print(f"❌ Error in statement:\n{stmt}")
-                        print(f"Error: {e}")
-                        raise e
-
-    except Exception as e:
-        print(f"🔥 Failed executing file: {file_path}")
-        print(e)
-        raise e
+    for stmt in statements:
+        stmt = stmt.strip()
+        if stmt:
+            try:
+                print(f"➡️ Executing: {stmt[:80]}...")
+                cursor.execute(stmt)
+            except Exception as e:
+                print(f"❌ Error in:\n{stmt}")
+                print(e)
+                raise e
 
 
-# 🔁 Run all SQL files in order
+# 🔁 Execution order
 files = [
     "01_setup.sql",
     "02_load_data.sql",
@@ -57,7 +69,6 @@ files = [
 for file in files:
     run_sql_file(file)
 
-# Close connection
 cursor.close()
 conn.close()
 
