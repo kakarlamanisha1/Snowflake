@@ -30,7 +30,7 @@ private_key = get_private_key()
 if private_key:
     print("🔐 Using Key Pair Authentication")
     conn = snowflake.connector.connect(
-        user=os.environ['SNOWFLAKE_USER'],
+        user=os.environ['SNOWFLAKE_USERNAME'],
         account=os.environ['SNOWFLAKE_ACCOUNT'],
         private_key=private_key,
         warehouse=os.environ['SNOWFLAKE_WAREHOUSE'],
@@ -40,7 +40,7 @@ if private_key:
 else:
     print("🔑 Using Password Authentication")
     conn = snowflake.connector.connect(
-        user=os.environ['SNOWFLAKE_USER'],
+        user=os.environ['SNOWFLAKE_USERNAME'],
         password=os.environ.get('SNOWFLAKE_PASSWORD'),
         account=os.environ['SNOWFLAKE_ACCOUNT'],
         warehouse=os.environ['SNOWFLAKE_WAREHOUSE'],
